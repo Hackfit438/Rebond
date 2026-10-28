@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<title>Rebond</title>
+<meta name="theme-color" content="#0F172A">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Rebond">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="favicon.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<style>
+:root{--ink:#0F172A;--card:#fff;--muted:#64748B;--brand:#4F46E5;--brand-soft:#EEF2FF;--brand-ink:#3730A3}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;background:var(--ink);font:15px/1.45 Roboto,"Segoe UI",system-ui,-apple-system,sans-serif;overflow:hidden}
+#app{position:fixed;inset:0;width:100%;height:100%;border:0;display:block;background:#F4F5FA}
+[hidden]{display:none!important}
+.cover{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;background:var(--ink);color:#fff;padding:24px;text-align:center;transition:opacity .35s}
+.cover.out{opacity:0;pointer-events:none}
+.logo{width:76px;height:76px;border-radius:22px;background:linear-gradient(135deg,#6366F1,#22D3EE);display:grid;place-items:center;font-weight:800;font-size:38px;box-shadow:0 12px 40px rgba(99,102,241,.45)}
+.cover h1{margin:0;font-size:24px}
+.cover p{margin:0;color:#A5B4FC;max-width:320px}
+.bar{width:120px;height:4px;border-radius:4px;background:rgba(255,255,255,.12);overflow:hidden}
+.bar i{display:block;height:100%;width:40%;background:#A5B4FC;border-radius:4px;animation:b 1.1s ease-in-out infinite}
+@keyframes b{0%{transform:translateX(-100%)}100%{transform:translateX(260%)}}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;max-width:320px;border:0;border-radius:14px;padding:15px;font:inherit;font-size:16px;font-weight:700;cursor:pointer;text-decoration:none}
+.btn.main{background:#fff;color:var(--ink)}
+.btn.ghost{background:transparent;color:#A5B4FC;font-weight:500;padding:8px}
+.sheet{position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));background:var(--card);color:var(--ink);border-radius:18px;padding:16px;box-shadow:0 18px 50px rgba(15,23,42,.35);display:flex;gap:14px;align-items:center;animation:up .3s ease-out}
+@keyframes up{from{transform:translateY(30px);opacity:0}to{transform:none;opacity:1}}
+.sheet .logo{width:46px;height:46px;border-radius:13px;font-size:22px;color:#fff;box-shadow:none;flex:none}
+.sheet b{display:block;font-size:15px}
+.sheet span{color:var(--muted);font-size:13px}
+.sheet .txt{flex:1;min-width:0}
+.sheet .go{background:var(--brand);color:#fff;border:0;border-radius:12px;padding:10px 14px;font:inherit;font-weight:700;cursor:pointer;white-space:nowrap}
+.sheet .x{background:none;border:0;color:var(--muted);font-size:20px;cursor:pointer;padding:4px;align-self:flex-start}
+</style>
+</head>
+<body>
+<iframe id="app" title="Rebond" allow="clipboard-write; vibrate" hidden></iframe>
+
+<div class="cover" id="splash">
+  <div class="logo">R</div>
+  <h1>Rebond</h1>
+  <div class="bar"><i></i></div>
+</div>
+
+<div class="cover" id="lent" hidden>
+  <div class="logo">R</div>
+  <h1>Encore un instant…</h1>
+  <p>Ton appli met plus de temps que d'habitude à s'ouvrir.</p>
+  <a class="btn main" id="direct">Ouvrir Rebond</a>
+  <button class="btn ghost" id="retry">Réessayer ici</button>
+</div>
+
+<div class="cover" id="ios" hidden>
+  <div class="logo">R</div>
+  <h1>Rebond</h1>
+  <p>Pour retrouver Rebond d'un geste : touche <b>Partager</b> puis <b>Sur l'écran d'accueil</b>.</p>
+  <a class="btn main" id="iosgo">Ouvrir Rebond</a>
+</div>
+
+<div class="cover" id="vide" hidden>
+  <div class="logo">R</div>
+  <h1>Bienvenue sur Rebond</h1>
+  <p>Ouvre Rebond une première fois depuis ton lien d'installation : cette page s'en souviendra ensuite.</p>
+  <a class="btn main" href="https://script.google.com/macros/s/AKfycbxXPLvpw7T1iZYcoU1h-sfaJUaUgrzKvGAun22ogXe_g-sl8F7WrKM9dIbhacZ_PCar5g/exec">Ouvrir mon lien d'installation</a>
+</div>
+
+<div class="sheet" id="sheet" hidden>
+  <div class="logo">R</div>
+  <div class="txt"><b>Installe Rebond</b><span id="sheetTxt">Une icône sur ton écran d'accueil, ouverte en plein écran.</span></div>
+  <button class="go" id="install">Installer</button>
+  <button class="x" id="later" aria-label="Plus tard">×</button>
+</div>
+
+<script>
+(function () {
+  var KEY = 'rebondAppli', OK = /^[A-Za-z0-9_-]{30,}$/;
+  var $ = function (id) { return document.getElementById(id); };
+  function lire(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function ecrire(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+
+  // 1. quelle appli ouvrir : celle passée dans le lien (#id), sinon celle mémorisée
+  var h = decodeURIComponent((location.hash || '').replace(/^#(d=)?/, ''));
+  if (OK.test(h)) { ecrire(KEY, h); history.replaceState(null, '', location.pathname); }
+  var id = OK.test(h) ? h : lire(KEY);
+  if (!id || !OK.test(id)) { $('splash').hidden = true; $('vide').hidden = false; return; }
+  var url = 'https://script.google.com/macros/s/' + id + '/exec';
+  $('direct').href = url; $('iosgo').href = url;
+
+  var standalone = matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+  var ios = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
+  // 2. iPhone : Safari bloque la connexion Google dans une page intégrée, on ouvre l'appli directement
+  if (ios) {
+    if (standalone) { location.replace(url); return; }
+    $('splash').hidden = true; $('ios').hidden = false; return;
+  }
+
+  // 3. ailleurs : l'appli s'affiche dans cette page, sans bandeau
+  var pret = false, minuteur;
+  function charger() {
+    pret = false;
+    $('lent').hidden = true; $('splash').hidden = false; $('splash').classList.remove('out');
+    $('app').hidden = false; $('app').src = url;
+    clearTimeout(minuteur);
+    minuteur = setTimeout(function () { if (!pret) { $('splash').hidden = true; $('lent').hidden = false; } }, 20000);
+  }
+  window.addEventListener('message', function (e) {
+    if (!/\.googleusercontent\.com$/.test(new URL(e.origin).hostname)) return;
+    var d = e.data || {};
+    if (d.rebond === 'ready') {
+      pret = true; clearTimeout(minuteur);
+      $('lent').hidden = true; $('splash').classList.add('out');
+      setTimeout(function () { $('splash').hidden = true; }, 400);
+      proposerInstallation();
+    } else if (d.rebond === 'reload') { charger(); }
+  });
+  $('retry').onclick = charger;
+  charger();
+
+  // 4. proposer l'icône sur l'écran d'accueil (une seule fois)
+  var invite = null;
+  window.addEventListener('beforeinstallprompt', function (e) {
+    e.preventDefault(); invite = e;
+    $('install').hidden = false;
+    $('sheetTxt').textContent = 'Une icône sur ton écran d’accueil, ouverte en plein écran.';
+  });
+  function proposerInstallation() {
+    if (standalone || lire('rebondInvite') === 'vu') return;
+    setTimeout(function () {
+      if (!invite) $('sheetTxt').textContent = 'Menu ⋮ de ton navigateur ▸ « Ajouter à l’écran d’accueil ».';
+      if (!invite) $('install').hidden = true;
+      $('sheet').hidden = false;
+    }, 2500);
+  }
+  $('install').onclick = function () {
+    if (!invite) return;
+    invite.prompt();
+    invite.userChoice.then(function () { ecrire('rebondInvite', 'vu'); $('sheet').hidden = true; invite = null; });
+  };
+  $('later').onclick = function () { ecrire('rebondInvite', 'vu'); $('sheet').hidden = true; };
+  window.addEventListener('appinstalled', function () { ecrire('rebondInvite', 'vu'); $('sheet').hidden = true; });
+})();
+</script>
+</body>
+</html>
