@@ -23,6 +23,7 @@ html,body{margin:0;height:100%;background:var(--ink);font:15px/1.45 Roboto,"Sego
 .logo{width:76px;height:76px;border-radius:22px;background:linear-gradient(135deg,#6366F1,#22D3EE);display:grid;place-items:center;font-weight:800;font-size:38px;box-shadow:0 12px 40px rgba(99,102,241,.45)}
 .cover h1{margin:0;font-size:24px}
 .cover p{margin:0;color:#A5B4FC;max-width:320px}
+.tip{min-height:22px;color:#A5B4FC;font-size:15px;transition:opacity .25s}
 .bar{width:120px;height:4px;border-radius:4px;background:rgba(255,255,255,.12);overflow:hidden}
 .bar i{display:block;height:100%;width:40%;background:#A5B4FC;border-radius:4px;animation:b 1.1s ease-in-out infinite}
 @keyframes b{0%{transform:translateX(-100%)}100%{transform:translateX(260%)}}
@@ -45,6 +46,7 @@ html,body{margin:0;height:100%;background:var(--ink);font:15px/1.45 Roboto,"Sego
 <div class="cover" id="splash">
   <div class="logo">R</div>
   <h1>Rebond</h1>
+  <p class="tip" id="tip"></p>
   <div class="bar"><i></i></div>
 </div>
 
@@ -100,6 +102,18 @@ html,body{margin:0;height:100%;background:var(--ink);font:15px/1.45 Roboto,"Sego
     if (standalone) { location.replace(url); return; }
     $('splash').hidden = true; $('ios').hidden = false; return;
   }
+
+  // petites phrases pendant le chargement (les mêmes que dans l'appli)
+  var TIPS = ['Je compte tes bénéfices…', 'Je range ton stock…', 'Je prépare tes chiffres du mois…', 'Je fais briller tes ventes…',
+    'Je dépoussière tes étagères…', 'Je recompte la caisse…', 'J’ouvre le rideau de ta boutique…', 'Je chauffe la calculette…',
+    'Je plie tes pulls…', 'Je cherche tes pépites…'];
+  var tipN = Math.floor(Math.random() * TIPS.length);
+  $('tip').textContent = TIPS[tipN];
+  setInterval(function () {
+    if ($('splash').hidden) return;
+    var t = $('tip'); t.style.opacity = 0;
+    setTimeout(function () { tipN = (tipN + 1) % TIPS.length; t.textContent = TIPS[tipN]; t.style.opacity = 1; }, 250);
+  }, 1600);
 
   // 3. ailleurs : l'appli s'affiche dans cette page, sans bandeau
   var pret = false, minuteur;
