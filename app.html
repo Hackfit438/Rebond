@@ -106,7 +106,7 @@ html,body{margin:0;height:100%;background:var(--ink);font:15px/1.45 Roboto,"Sego
   function charger() {
     pret = false;
     $('lent').hidden = true; $('splash').hidden = false; $('splash').classList.remove('out');
-    $('app').hidden = false; $('app').src = url;
+    $('app').hidden = false; $('app').src = url + '?cadre=1';   // l'appli sait qu'elle est affichée en plein écran
     clearTimeout(minuteur);
     minuteur = setTimeout(function () { if (!pret) { $('splash').hidden = true; $('lent').hidden = false; } }, 20000);
   }
