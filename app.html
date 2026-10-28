@@ -114,6 +114,7 @@ html,body{margin:0;height:100%;background:var(--ink);font:15px/1.45 Roboto,"Sego
     if (!/\.googleusercontent\.com$/.test(new URL(e.origin).hostname)) return;
     var d = e.data || {};
     if (d.rebond === 'ready') {
+      try { e.source.postMessage({ rebond: 'cadre' }, '*'); } catch (x) {}   // l'appli sait qu'elle est en plein écran
       pret = true; clearTimeout(minuteur);
       $('lent').hidden = true; $('splash').classList.add('out');
       setTimeout(function () { $('splash').hidden = true; }, 400);
