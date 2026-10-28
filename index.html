@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rebond — Le cockpit du revendeur Vinted & Leboncoin</title>
+<meta name="description" content="Rebond lit tes mails Vinted et Leboncoin et remplit ta compta tout seul : stock, ventes, bénéfice net calculé au centime, appli mobile.">
+<meta name="theme-color" content="#0F172A">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#0F172A;--ink2:#1E293B;--muted:#64748B;--line:#E2E8F0;--bg:#F4F5FA;--card:#fff;--brand:#4F46E5;--brand-ink:#3730A3;--brand-soft:#EEF2FF;--cyan:#22D3EE;--ok:#047857;--ok-soft:#D1FAE5}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+a{color:var(--brand)}
+.wrap{max-width:1040px;margin:0 auto;padding:0 20px}
+nav{display:flex;align-items:center;gap:12px;padding:18px 0}
+.logo{width:38px;height:38px;border-radius:11px;background:linear-gradient(135deg,#6366F1,var(--cyan));display:grid;place-items:center;color:#fff;font-weight:800;font-size:19px}
+nav b{font-size:18px}
+nav .sp{flex:1}
+nav a.small{font-size:14px;color:#A5B4FC;text-decoration:none}
+.hero{background:radial-gradient(1200px 500px at 80% -10%,rgba(34,211,238,.18),transparent 60%),radial-gradient(900px 500px at 0% 0%,rgba(99,102,241,.35),transparent 60%),var(--ink);color:#fff;padding-bottom:72px}
+.hero nav b{color:#fff}
+.hero-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:48px;align-items:center;padding-top:40px}
+.tag{display:inline-block;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);color:#C7D2FE;font-size:13px;font-weight:600;padding:6px 12px;border-radius:999px}
+h1{font-size:clamp(34px,5.4vw,56px);line-height:1.06;letter-spacing:-.02em;margin:18px 0 16px}
+h1 .grad{background:linear-gradient(90deg,#A5B4FC,var(--cyan));-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p.lead{font-size:18px;color:#CBD5E1;max-width:520px;margin:0 0 28px}
+.cta{display:inline-flex;align-items:center;gap:10px;background:#fff;color:var(--ink);font-weight:700;padding:15px 22px;border-radius:14px;text-decoration:none;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+.cta.alt{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.25);box-shadow:none;margin-left:8px}
+.phone{justify-self:center;width:280px;border-radius:36px;background:#0B1120;border:8px solid #1E293B;padding:18px 14px;box-shadow:0 30px 80px rgba(0,0,0,.45)}
+.ph-h{display:flex;align-items:center;gap:8px;color:#fff;font-weight:700;font-size:14px;margin-bottom:14px}
+.ph-h .logo{width:26px;height:26px;border-radius:8px;font-size:13px}
+.ph-card{background:#131C2E;border-radius:16px;padding:14px;margin-bottom:10px;color:#E2E8F0}
+.ph-card small{color:#94A3B8;font-size:11px;display:block}
+.ph-big{font-size:28px;font-weight:800;color:#6EE7B7;letter-spacing:-.02em}
+.mail{display:flex;gap:10px;align-items:center;font-size:12px}
+.mail .ic{width:28px;height:28px;border-radius:8px;display:grid;place-items:center;font-size:14px;background:#1E2550;flex:none}
+.mail b{display:block;font-size:12px;color:#fff}
+.mail span{color:#94A3B8}
+.mail .amt{margin-left:auto;font-weight:700;color:#6EE7B7;white-space:nowrap}
+section{padding:72px 0}
+.kicker{font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--brand)}
+h2{font-size:clamp(26px,3.6vw,36px);line-height:1.15;letter-spacing:-.01em;margin:8px 0 14px}
+.sub{color:var(--muted);max-width:620px;margin:0 0 36px;font-size:17px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.f{background:var(--card);border-radius:18px;padding:24px;box-shadow:0 1px 2px rgba(15,23,42,.05),0 8px 24px rgba(15,23,42,.05)}
+.f .em{font-size:26px}
+.f h3{margin:12px 0 6px;font-size:18px}
+.f p{margin:0;color:var(--muted);font-size:15px}
+.big-f{grid-column:span 2;background:linear-gradient(135deg,var(--brand),#6366F1);color:#fff}
+.big-f p{color:#E0E7FF}
+.steps{counter-reset:s;display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.step{counter-increment:s;background:var(--bg);border-radius:18px;padding:24px;position:relative}
+.step:before{content:counter(s);width:34px;height:34px;border-radius:50%;background:var(--brand-soft);color:var(--brand-ink);display:grid;place-items:center;font-weight:800;margin-bottom:12px}
+.step h3{margin:0 0 6px;font-size:17px}
+.step p{margin:0;color:var(--muted);font-size:15px}
+.privacy{background:var(--ink);color:#fff;border-radius:24px;padding:40px;display:grid;grid-template-columns:auto 1fr;gap:28px;align-items:center}
+.privacy .em{font-size:48px}
+.privacy h2{margin-top:0}
+.privacy p{color:#CBD5E1;margin:0}
+.calc{display:flex;flex-wrap:wrap;gap:10px;align-items:center;font-weight:700;font-size:18px;margin-top:6px}
+.calc span{background:rgba(255,255,255,.14);padding:6px 12px;border-radius:10px}
+.calc .res{background:#fff;color:var(--ok)}
+.final{text-align:center}
+.final .cta{background:var(--brand);color:#fff}
+footer{border-top:1px solid var(--line);padding:28px 0 40px;color:var(--muted);font-size:14px}
+footer .wrap{display:flex;gap:18px;flex-wrap:wrap;align-items:center}
+footer .sp{flex:1}
+@media (max-width:820px){
+  .hero-grid{grid-template-columns:1fr;gap:40px;padding-top:16px}
+  .grid3,.steps{grid-template-columns:1fr}
+  .big-f{grid-column:auto}
+  .privacy{grid-template-columns:1fr;padding:28px}
+  .cta.alt{margin:10px 0 0}
+  section{padding:56px 0}
+}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <nav><div class="logo">R</div><b>Rebond</b><span class="sp"></span><a class="small" href="confidentialite.html">Confidentialité</a></nav>
+    <div class="hero-grid">
+      <div>
+        <span class="tag">Pour les revendeurs Vinted &amp; Leboncoin</span>
+        <h1>Tu vends.<br><span class="grad">Rebond fait le reste.</span></h1>
+        <p class="lead">Rebond lit tes mails Vinted et Leboncoin et remplit ton stock, tes ventes et ton bénéfice tout seul. Fini le recopiage.</p>
+        <a class="cta" href="#comment">Voir comment ça marche</a><a class="cta alt" href="#confiance">Tes données restent chez toi</a>
+      </div>
+      <div class="phone" aria-hidden="true">
+        <div class="ph-h"><div class="logo">R</div>Rebond</div>
+        <div class="ph-card"><small>Résultat du mois</small><div class="ph-big">+323,48 €</div></div>
+        <div class="ph-card">
+          <div class="mail"><div class="ic">💰</div><div><b>Vente enregistrée</b><span>Vinted · Veste en jean</span></div><div class="amt">+17,31 €</div></div>
+        </div>
+        <div class="ph-card">
+          <div class="mail"><div class="ic">🛒</div><div><b>Achat ajouté au stock</b><span>Leboncoin · Lot de 4</span></div><div class="amt" style="color:#A5B4FC">+4 art.</div></div>
+        </div>
+        <div class="ph-card">
+          <div class="mail"><div class="ic">🔄</div><div><b>Boîte mail vérifiée</b><span>toutes les 15 min</span></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section>
+    <div class="wrap">
+      <div class="kicker">Tout ce qu'il te faut</div>
+      <h2>Le cockpit complet de ton activité de revente</h2>
+      <p class="sub">Un tableur Google Sheets puissant et une appli sur ton téléphone, réunis dans un seul outil.</p>
+      <div class="grid3">
+        <div class="f big-f"><div class="em">📨</div><h3>Tes mails deviennent ta compta</h3><p>Achats, ventes, annonces en ligne, ventes annulées : Rebond lit tes mails Vinted et Leboncoin et met tout à jour, même quand ton téléphone est éteint.</p></div>
+        <div class="f"><div class="em">📱</div><h3>Une vraie appli</h3><p>Une icône sur ton écran d'accueil, de gros boutons, et ton bénéfice qui grimpe à chaque vente.</p></div>
+        <div class="f"><div class="em">🧮</div><h3>Ton vrai bénéfice</h3><p>Prix d'achat, frais et cotisations URSSAF déduits : tu sais ce qu'il te reste, au centime.</p></div>
+        <div class="f"><div class="em">🤝</div><h3>Une offre ? Verdict immédiat</h3><p>Rebond te dit tout de suite si l'offre reste rentable.</p></div>
+        <div class="f"><div class="em">✨</div><h3>Tes annonces écrites par l'IA</h3><p>Des descriptions prêtes à publier, générées à partir de tes articles.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="comment" style="background:#fff">
+    <div class="wrap">
+      <div class="kicker">Installation</div>
+      <h2>Prêt en une minute, depuis ton téléphone</h2>
+      <p class="sub">Pas d'ordinateur, pas de code, rien à configurer.</p>
+      <div class="steps">
+        <div class="step"><h3>Tu ouvres ton lien d'installation</h3><p>Reçu avec ton achat. Un réglage à activer en 10 secondes, puis un bouton « Installer ».</p></div>
+        <div class="step"><h3>Rebond s'installe dans ton compte Google</h3><p>Ton tableur et ton appli sont créés automatiquement, prêts à l'emploi.</p></div>
+        <div class="step"><h3>Tu choisis une date, c'est parti</h3><p>Rebond lit tes mails depuis cette date et remplit tout. Ensuite, il continue tout seul.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="confiance">
+    <div class="wrap">
+      <div class="privacy">
+        <div class="em">🔒</div>
+        <div>
+          <h2>Tes données restent dans ton compte Google</h2>
+          <p>Rebond s'installe et tourne entièrement dans ton propre compte Google. Tes ventes et tes mails ne passent par aucun autre serveur, et personne d'autre que toi n'y a accès, pas même nous. <a href="confidentialite.html" style="color:#A5B4FC">Lire la politique de confidentialité</a></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="final">
+    <div class="wrap">
+      <h2>Concentre-toi sur tes ventes.</h2>
+      <p class="sub" style="margin:0 auto 26px">Rebond, le cockpit du revendeur.</p>
+      <div class="calc" style="justify-content:center;color:var(--ink2)">
+        <span style="background:var(--brand-soft)">30 € vendu</span><span style="background:var(--brand-soft)">− 9 € d'achat</span><span style="background:var(--brand-soft)">− 3,69 € URSSAF</span><span class="res" style="background:var(--ok-soft)">= +17,31 €</span>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 Rebond</span><span class="sp"></span>
+    <a href="confidentialite.html">Confidentialité</a>
+    <a href="mailto:hackfit38@gmail.com">Contact</a>
+  </div>
+</footer>
+</body>
+</html>
