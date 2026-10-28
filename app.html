@@ -121,6 +121,8 @@ html,body{margin:0;height:100%;background:var(--ink);font:15px/1.45 Roboto,"Sego
     } else if (d.rebond === 'reload') { charger(); }
   });
   $('retry').onclick = charger;
+  // l'écran de bienvenue renvoie vers app.html#id : on recharge pour prendre la bonne appli
+  window.addEventListener('hashchange', function () { location.reload(); });
   charger();
 
   // 4. proposer l'icône sur l'écran d'accueil (une seule fois)
