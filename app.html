@@ -36,7 +36,7 @@ html,body{margin:0;height:100%;background:var(--ink);font:15px/1.45 Roboto,"Sego
 .sheet b{display:block;font-size:15px}
 .sheet span{color:var(--muted);font-size:13px}
 .sheet .txt{flex:1;min-width:0}
-.sheet .go{background:var(--brand);color:#fff;border:0;border-radius:12px;padding:10px 14px;font:inherit;font-weight:700;cursor:pointer;white-space:nowrap}
+.sheet .go{background:var(--brand);color:#fff;border:0;border-radius:12px;padding:10px 14px;font:inherit;font-weight:700;cursor:pointer;white-space:nowrap;text-decoration:none}
 .sheet .x{background:none;border:0;color:var(--muted);font-size:20px;cursor:pointer;padding:4px;align-self:flex-start}
 </style>
 </head>
@@ -72,6 +72,13 @@ html,body{margin:0;height:100%;background:var(--ink);font:15px/1.45 Roboto,"Sego
   <a class="btn main" href="https://script.google.com/macros/s/AKfycbxXPLvpw7T1iZYcoU1h-sfaJUaUgrzKvGAun22ogXe_g-sl8F7WrKM9dIbhacZ_PCar5g/exec">Ouvrir mon lien d'installation</a>
 </div>
 
+<div class="sheet" id="aide" hidden>
+  <div class="logo">R</div>
+  <div class="txt"><b>Rebond ne s'affiche pas ?</b><span>Ouvre-le directement, ou réessaie ici.</span></div>
+  <a class="go" id="aideGo">Ouvrir</a>
+  <button class="x" id="aideX" aria-label="Fermer">×</button>
+</div>
+
 <div class="sheet" id="sheet" hidden>
   <div class="logo">R</div>
   <div class="txt"><b>Installe Rebond</b><span id="sheetTxt">Une icône sur ton écran d'accueil, ouverte en plein écran.</span></div>
@@ -92,7 +99,7 @@ html,body{margin:0;height:100%;background:var(--ink);font:15px/1.45 Roboto,"Sego
   var id = OK.test(h) ? h : lire(KEY);
   if (!id || !OK.test(id)) { $('splash').hidden = true; $('vide').hidden = false; return; }
   var url = 'https://script.google.com/macros/s/' + id + '/exec';
-  $('direct').href = url; $('iosgo').href = url;
+  $('direct').href = url; $('iosgo').href = url; $('aideGo').href = url;
 
   var standalone = matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
   var ios = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
@@ -115,26 +122,44 @@ html,body{margin:0;height:100%;background:var(--ink);font:15px/1.45 Roboto,"Sego
     setTimeout(function () { tipN = (tipN + 1) % TIPS.length; t.textContent = TIPS[tipN]; t.style.opacity = 1; }, 250);
   }, 1600);
 
-  // 3. ailleurs : l'appli s'affiche dans cette page, sans bandeau
-  var pret = false, minuteur;
-  function charger() {
-    pret = false;
-    $('lent').hidden = true; $('splash').hidden = false; $('splash').classList.remove('out');
-    $('app').hidden = false; $('app').src = url + '?cadre=1';   // l'appli sait qu'elle est affichée en plein écran
-    clearTimeout(minuteur);
-    minuteur = setTimeout(function () { if (!pret) { $('splash').hidden = true; $('lent').hidden = false; } }, 20000);
+  // 3. ailleurs : l'appli s'affiche dans cette page, sans bandeau.
+  // On retire l'écran de démarrage dès que l'appli répond « prête », ou au plus tard peu après le
+  // chargement de la page Google : sur Android, Chrome peut mettre en pause une page intégrée
+  // entièrement cachée, et elle ne répondait alors qu'au premier toucher de l'écran.
+  var pret = false, charge = false, montre = false, minuteur, secours;
+  function montrer() {
+    if (montre) return; montre = true;
+    $('lent').hidden = true; $('splash').classList.add('out');
+    setTimeout(function () { $('splash').hidden = true; }, 400);
+    proposerInstallation();
   }
+  function charger() {
+    pret = false; charge = false; montre = false;
+    $('lent').hidden = true; $('aide').hidden = true; $('splash').hidden = false; $('splash').classList.remove('out');
+    $('app').hidden = false; $('app').src = url + '?cadre=1';   // l'appli sait qu'elle est affichée en plein écran
+    clearTimeout(minuteur); clearTimeout(secours);
+    minuteur = setTimeout(function () {
+      if (pret) return;
+      if (charge) { $('aide').hidden = false; montrer(); }          // la page est là : petit rappel, sans la cacher
+      else { $('splash').hidden = true; $('lent').hidden = false; } // rien n'est arrivé : proposer d'ouvrir autrement
+    }, 20000);
+  }
+  $('app').addEventListener('load', function () {
+    if (!$('app').src) return;
+    charge = true; clearTimeout(secours);
+    secours = setTimeout(montrer, 1500);   // l'appli a son propre écran de chargement, identique
+  });
   window.addEventListener('message', function (e) {
-    if (!/\.googleusercontent\.com$/.test(new URL(e.origin).hostname)) return;
+    var o; try { o = new URL(e.origin).hostname; } catch (x) { return; }
+    if (!/\.googleusercontent\.com$/.test(o)) return;
     var d = e.data || {};
     if (d.rebond === 'ready') {
       try { e.source.postMessage({ rebond: 'cadre' }, '*'); } catch (x) {}   // l'appli sait qu'elle est en plein écran
-      pret = true; clearTimeout(minuteur);
-      $('lent').hidden = true; $('splash').classList.add('out');
-      setTimeout(function () { $('splash').hidden = true; }, 400);
-      proposerInstallation();
+      pret = true; clearTimeout(minuteur); clearTimeout(secours); $('aide').hidden = true;
+      montrer();
     } else if (d.rebond === 'reload') { charger(); }
   });
+  $('aideX').onclick = function () { $('aide').hidden = true; };
   $('retry').onclick = charger;
   // l'écran de bienvenue renvoie vers app.html#id : on recharge pour prendre la bonne appli
   window.addEventListener('hashchange', function () { location.reload(); });
